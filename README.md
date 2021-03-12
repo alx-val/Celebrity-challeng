@@ -14,7 +14,7 @@ _you need download the project from GitHup, you have the following options_
 
 ### Pre-requirement 📋
 
-_Need the following tools for testing this software in local environment _
+_Need the following tools for testing this software in local environment_
 - You need to have JDK8+ in your local environment
 - IDE or CLI
 - Gradle
