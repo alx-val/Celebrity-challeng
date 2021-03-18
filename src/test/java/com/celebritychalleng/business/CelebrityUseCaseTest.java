@@ -2,13 +2,14 @@ package com.celebritychalleng.business;
 
 import com.celebritychalleng.model.Person;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CelebrityUseCaseTest {
+class CelebrityUseCaseTest {
 
     public static final String ID_CELEBRITY_1 = "id-celebrity-1";
     public static final String CELEBRITY_1 = "Celebrity 1";
@@ -17,12 +18,17 @@ public class CelebrityUseCaseTest {
     public static final String ID_TEAMMATE_2 = "id-teammate-2";
     public static final String TEAMMATE_2 = "Teammate 2";
     private final CelebrityUseCase celebrityUseCase = new CelebrityUseCase();
+    private List<Person> celebrities;
+    private List<Person> teamMates;
+
+    @BeforeEach
+    public void init() {
+        celebrities = new ArrayList<>();
+        teamMates = new ArrayList<>();
+    }
 
     @Test
-    public void teamWithCelebrity() {
-
-        List<Person> celebrities = new ArrayList<>();
-        List<Person> teamMates = new ArrayList<>();
+    void shouldReturnCelebrityWhenCelebrityInsideTeam() {
 
         Person celebrity = Person.builder()
                 .identification(ID_CELEBRITY_1)
@@ -31,100 +37,89 @@ public class CelebrityUseCaseTest {
                 .build();
         celebrities.add(celebrity);
 
-        Person teamMate1 = Person.builder()
+        Person teamMateWithKnownCelebrity1 = Person.builder()
                 .identification(ID_TEAMMATE_1)
                 .name(TEAMMATE_1)
                 .knows(celebrities)
                 .build();
 
-        Person teamMate2 = Person.builder()
+        Person teamMateWithKnownCelebrity2 = Person.builder()
                 .identification(ID_TEAMMATE_2)
                 .name(TEAMMATE_2)
                 .knows(celebrities)
                 .build();
 
         teamMates.add(celebrity);
-        teamMates.add(teamMate1);
-        teamMates.add(teamMate2);
+        teamMates.add(teamMateWithKnownCelebrity1);
+        teamMates.add(teamMateWithKnownCelebrity2);
 
         Assertions.assertEquals(celebrity, celebrityUseCase.findCelebrity(teamMates));
-
     }
 
-
     @Test
-    public void candidateCelebrityWithOneKnowTest() {
+    void shouldNotReturnCelebrityWhenCelebrityKnowsTeam() {
 
-        List<Person> celebrities = new ArrayList<>();
-        List<Person> teamMates = new ArrayList<>();
-
-        Person celebrity = Person.builder()
+        Person celebrityWithKnows = Person.builder()
                 .identification(ID_CELEBRITY_1)
                 .name(CELEBRITY_1)
                 .knows(Collections.singletonList(Person.builder()
                         .identification(ID_TEAMMATE_1)
                         .name(TEAMMATE_1)
-                        .knows(celebrities)
+                        .knows(teamMates)
                         .build()))
                 .build();
-        celebrities.add(celebrity);
+        celebrities.add(celebrityWithKnows);
 
-        Person teamMate1 = Person.builder()
+        Person teamMateWithKnownCelebrity1 = Person.builder()
                 .identification(ID_TEAMMATE_1)
                 .name(TEAMMATE_1)
                 .knows(celebrities)
                 .build();
 
-        Person teamMate2 = Person.builder()
+        Person teamMateWithKnownCelebrity2 = Person.builder()
                 .identification(ID_TEAMMATE_2)
                 .name(TEAMMATE_2)
                 .knows(celebrities)
                 .build();
 
-        teamMates.add(celebrity);
-        teamMates.add(teamMate1);
-        teamMates.add(teamMate2);
+        teamMates.add(teamMateWithKnownCelebrity1);
+        teamMates.add(teamMateWithKnownCelebrity2);
+        teamMates.add(celebrityWithKnows);
 
         Assertions.assertNull(celebrityUseCase.findCelebrity(teamMates));
-
     }
 
     @Test
-    public void nobodyKnowsNobodyTest() {
+    public void shouldNotReturnCelebrityWhenNobodyKnowsNobody() {
 
-        List<Person> teamMates = new ArrayList<>();
-
-        Person celebrity = Person.builder()
+        Person celebrityWithoutAcquaintances = Person.builder()
                 .identification(ID_CELEBRITY_1)
                 .name(CELEBRITY_1)
                 .knows(new ArrayList<>())
                 .build();
 
-        Person teamMate1 = Person.builder()
+        Person teamMateWithoutAcquaintances1 = Person.builder()
                 .identification(ID_TEAMMATE_1)
                 .name(TEAMMATE_1)
                 .knows(new ArrayList<>())
                 .build();
 
-        Person teamMate2 = Person.builder()
+        Person teamMateWithoutAcquaintances2 = Person.builder()
                 .identification(ID_TEAMMATE_2)
                 .name(TEAMMATE_2)
                 .knows(new ArrayList<>())
                 .build();
 
-        teamMates.add(celebrity);
-        teamMates.add(teamMate1);
-        teamMates.add(teamMate2);
+        teamMates.add(celebrityWithoutAcquaintances);
+        teamMates.add(teamMateWithoutAcquaintances1);
+        teamMates.add(teamMateWithoutAcquaintances2);
 
         Assertions.assertNull(celebrityUseCase.findCelebrity(teamMates));
 
     }
 
     @Test
-    public void onePersonNotKnowCandidateCelebrityTest() {
-
-        List<Person> celebrities = new ArrayList<>();
-        List<Person> teamMates = new ArrayList<>();
+    public void shouldNotReturnCelebrityWhenOneTeammateNotKnowsNobody() {
 
         Person celebrity = Person.builder()
                 .identification(ID_CELEBRITY_1)
@@ -133,22 +128,50 @@ public class CelebrityUseCaseTest {
                 .build();
         celebrities.add(celebrity);
 
-        Person teamMate1 = Person.builder()
+        Person teamMateWithKnownCelebrity = Person.builder()
                 .identification(ID_TEAMMATE_1)
                 .name(TEAMMATE_1)
                 .knows(celebrities)
                 .build();
 
-        Person teamMate2 = Person.builder()
+        Person teamMateWithoutAcquaintances = Person.builder()
                 .identification(ID_TEAMMATE_2)
                 .name(TEAMMATE_2)
                 .knows(new ArrayList<>())
                 .build();
 
         teamMates.add(celebrity);
-        teamMates.add(teamMate1);
-        teamMates.add(teamMate2);
+        teamMates.add(teamMateWithKnownCelebrity);
+        teamMates.add(teamMateWithoutAcquaintances);
 
         Assertions.assertNull(celebrityUseCase.findCelebrity(teamMates));
+    }
+
+    @Test
+    public void shouldNotReturnCelebrityWhenOneTeammateKnowOnlyTeammate() {
+
+        Person celebrityCandidate = Person.builder()
+                .identification(ID_CELEBRITY_1)
+                .name(CELEBRITY_1)
+                .knows(new ArrayList<>())
+                .build();
+        celebrities.add(celebrityCandidate);
+
+        Person teamMateWithKnownCelebrity = Person.builder()
+                .identification(ID_TEAMMATE_1)
+                .name(TEAMMATE_1)
+                .knows(celebrities)
+                .build();
+
+        teamMates.add(teamMateWithKnownCelebrity);
+        Person teamMateWithKnownTeamMate = Person.builder()
+                .identification(ID_TEAMMATE_2)
+                .name(TEAMMATE_2)
+                .knows(teamMates)
+                .build();
+        teamMates.add(teamMateWithKnownTeamMate);
+
+        Assertions.assertNull(celebrityUseCase.findCelebrity(teamMates));
+
     }
 }
